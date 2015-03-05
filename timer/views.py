@@ -1,19 +1,49 @@
-from timer.models import Users, Teams, Company, TimeRecord
-from rest_framework import viewsets
-from timer.serializers import UserSerializer, TeamSerializer, CompanySerializer, TimeRecordSerializer
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 
-class UserViewSet(viewsets.ModelViewSet):
-	queryset = Users.objects.all()
-	serializer_class = UserSerializer
+from timer.models import TimeRecord,User
+from timer.serializers import TimeRecordSerializer,UserSerializer
 
-class TeamViewSet(viewsets.ModelViewSet):
-	queryset = Teams.objects.all()
-	serializer_class = TeamSerializer
+class TodayList(APIView):
+	'''
+	List of todays pomodoros
+	'''
+	def get(self, request, format=None):
+		d = datetime.datetime.now()
+		datenow = "%s-%s-%s" % (d.year, d.month, d.day)
+		pomodoroList = TimeRecord.objects.filter(on_date=datenow)
+		serializer   = TimeRecordSerializer(pomodoroList, many=True)
+		return Response(serializer.data , status=status.HTTP_200_OK)
 
-class CompanyViewSet(viewsets.ModelViewSet):
-	queryset = Company.objects.all()
-	serializer_class = CompanySerializer
-
-class TimeRecordViewSet(viewsets.ModelViewSet):
-	queryset = TimeRecord.objects.all()
-	serializer_class = TimeRecordSerializer
+class UserView(APIView):
+	authentication_classes = (JSONWebTokenAuthentication, )
+	permission_classes = (IsAuthenticated,)
+	def get(self, request, format=None):
+		data = {
+			'id': request.user.id,
+			'username': request.user.username,
+			'token': str(request.auth)
+		}
+		return Response(data)
+		'''
+		userList = User.objects.all()
+		serializer = UserSerializer(userList, many=True)
+		return Response(serializer.data, status=status.HTTP_200_OK)
+		'''
+class TimerView(APIView):
+	authentication_classes = (JSONWebTokenAuthentication, )
+	permission_classes = (IsAuthenticated,)
+	def get(self, request, format=None):
+		timers = TimeRecord.objects.filter(owner=request.user.id)
+		serializer = TimeRecordSerializer(timers,many=True)
+		return Response(serializer.data, status=status.HTTP_200_OK)
+	
+	def post(self, request, format=None):
+		record = TimeRecordSerializer(data = request.data)
+		if record.is_valid():
+			record.save()
+			return Response(record.data, status=status.HTTP_201_CREATED)
+		return Response(record.errors, status=status.HTTP_400_BAD_REQUEST)

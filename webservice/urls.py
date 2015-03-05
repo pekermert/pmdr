@@ -1,13 +1,12 @@
-from django.conf.urls import include, url
-from rest_framework import routers
+from django.conf.urls import url
+from rest_framework.urlpatterns import format_suffix_patterns
 from timer import views
 
-router = routers.DefaultRouter()
-router.register(r'users', views.UserViewSet)
-router.register(r'teams', views.TeamViewSet)
-router.register(r'company', views.CompanyViewSet)
-router.register(r'times', views.TimeRecordViewSet)
-
 urlpatterns = [
-	url(r'^', include(router.urls))
+	url(r'^$', views.UserView.as_view()),
+	url(r'^user/$', views.UserView.as_view()),
+	url(r'^timer/$', views.TimerView.as_view()),
+	url(r'^api-token-auth/', 'rest_framework_jwt.views.obtain_jwt_token'),
 ]
+
+urlpatterns = format_suffix_patterns(urlpatterns)
