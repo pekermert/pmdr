@@ -21,6 +21,7 @@ class TodayList(APIView):
 class UserView(APIView):
 	authentication_classes = (JSONWebTokenAuthentication, )
 	permission_classes = (IsAuthenticated,)
+	
 	def get(self, request, format=None):
 		data = {
 			'id': request.user.id,
@@ -33,9 +34,23 @@ class UserView(APIView):
 		serializer = UserSerializer(userList, many=True)
 		return Response(serializer.data, status=status.HTTP_200_OK)
 		'''
+
+class RegisterView(APIView):
+	authentication_classes = (JSONWebTokenAuthentication, )
+	permission_classes = ()
+
+	def post(self, request, format=None):
+		serializer = UserSerializer(data = request.data)
+		if serializer.is_valid():
+			serializer.save()
+			return Response(serializer.data, status=status.HTTP_201_CREATED)
+		else:
+			return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+   
 class TimerView(APIView):
 	authentication_classes = (JSONWebTokenAuthentication, )
 	permission_classes = (IsAuthenticated,)
+
 	def get(self, request, format=None):
 		timers = TimeRecord.objects.filter(owner=request.user.id)
 		serializer = TimeRecordSerializer(timers,many=True)
