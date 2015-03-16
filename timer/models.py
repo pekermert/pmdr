@@ -22,7 +22,6 @@ STATUS_CHOICES = (
 class TimeRecord(models.Model):
 	id = models.AutoField(primary_key=True)
 	owner = models.ForeignKey(User)
-	on_date = models.DateField(auto_now_add=True)
-	on_time = models.TimeField(auto_now_add=True)
+	on_date = models.DateTimeField(auto_now_add=True)
 	types = models.CharField(max_length=2,choices=TIME_CHOICES,default=STUDY)
 	status = models.CharField(max_length=2,choices=STATUS_CHOICES,default=CONTINUES)

@@ -9,7 +9,7 @@ urlpatterns = [
 	url(r'^register/$', views.RegisterView.as_view()),
 	url(r'^timer/$', views.TimeRecordView.as_view()),
 	url(r'^timer/(?P<user_id>\w+)/$', views.TimeRecordView.as_view()),
-	url(r'^timer/(?P<timer_id>\w+)/$', views.TimeRecordView.as_view()),
+	url(r'^timer/check/(?P<timer_id>\w+)/$', views.TimeRecordView.as_view()),
 	url(r'^statics/$', views.UserStatsView.as_view()),
 	url(r'^statics/(?P<user_id>\w+)/$', views.UserStatsView.as_view()),
 	url(r'^api-token-auth/', 'rest_framework_jwt.views.obtain_jwt_token'),

@@ -6,6 +6,7 @@ from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 
 from timer.models import TimeRecord,User
 from timer.serializers import TimeRecordSerializer,UserSerializer
+from timer.utils import checkTimer
 
 	
 class UserProfileView (APIView):
@@ -49,21 +50,28 @@ class TimeRecordView (APIView):
 		except TimeRecord.DoesNotExist: # Error ?? ! 
 			return Response(new_data.errors, status=status.HTTP_400_BAD_REQUEST) 
 
-	#TODO : put method = Update state timer DONE , RESET
 	def put(self, request, timer_id=None, *args, **kw):
 		try:
-			timer_status = request.GET.get('status', None)
 			if timer_id:
-				if timer_status:
-					# THERE IS NOT OK    !!!!!!!!!!!!
-					record = TimeRecord.objects.filter(id=timer_id,owner=request.user.id) \
-					.update(status=timer_status)
-			else:	
+				record = TimeRecord.objects.filter(id=timer_id,status='CT')
+				dt = TimeRecord.objects.get(id=timer_id,status='CT',owner=request.user.id)
+				timer_check = checkTimer(record)
+				if timer_check:
+					dt.status = 'DN' #DONE
+					dt.save()
+					return Response(status=status.HTTP_200_OK)
+				else:
+					dt.status = 'CL' #CANCEL
+					dt.save()
+					return Response({'Error':'Timer expired!'},status=status.HTTP_400_BAD_REQUEST)	
+			else:
 				return Response(status=status.HTTP_400_BAD_REQUEST)
+		except TimeRecord.DoesNotExist:
+			return Response({'Error':'Record does not exist'}, status=status.HTTP_400_BAD_REQUEST)
 		except:
-			return Response(status=status.HTTP_400_BAD_REQUEST)
-
+			return Response({'Error':'Exception throwing'} ,status=status.HTTP_400_BAD_REQUEST)
 		
+
 class UserStatsView(APIView):
 	authentication_classes = (JSONWebTokenAuthentication, )
 	permission_classes = ()	

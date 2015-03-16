@@ -4,7 +4,7 @@ from rest_framework import serializers
 class TimeRecordSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = TimeRecord
-		fields = ('id','owner','on_date','on_time','types','status')
+		fields = ('id','owner','on_date','types','status')
 
 class UserSerializer(serializers.ModelSerializer):
 	class Meta:
