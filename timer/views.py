@@ -1,8 +1,8 @@
 from rest_framework.decorators import APIView
 from rest_framework.response import Response
-from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
+from rest_framework import status
 
 from timer.models import TimeRecord,User
 from timer.serializers import TimeRecordSerializer,UserSerializer
@@ -17,6 +17,7 @@ class UserProfileView (APIView):
 		#get_arg1 = request.GET.get('arg1', None)
 		if user_id is None:
 			user_id = request.user.id
+
 		user = User.objects.filter(id=user_id)
 		serializer = UserSerializer(user,many=True)
 		return Response(serializer.data, status=status.HTTP_200_OK)
@@ -28,6 +29,9 @@ class TimeRecordView (APIView):
 	permission_classes = ()
 
 	def get(self, request, user_id=None, *args, **kw):
+		'''
+		Returns the users last timer object
+		'''
 		try:
 			if user_id is None:
 				user_id = request.user.id
@@ -41,8 +45,12 @@ class TimeRecordView (APIView):
 			return Response(status=status.HTTP_404_NOT_FOUND)
 
 	def post(self, request):
+		'''
+		Creates new timer
+		'''
 		try:
 			new_data = TimeRecordSerializer(data = request.data)
+			print request.data
 			if new_data.is_valid():
 				new_data.save()
 				return Response(new_data.data, status=status.HTTP_201_CREATED)
@@ -51,9 +59,14 @@ class TimeRecordView (APIView):
 			return Response(new_data.errors, status=status.HTTP_400_BAD_REQUEST) 
 
 	def put(self, request, timer_id=None, *args, **kw):
+		'''
+		Timer request for DONE or CANCEL status.
+		'''
 		try:
 			if timer_id:
+				#timer object for checking
 				record = TimeRecord.objects.filter(id=timer_id,status='CT')
+				#timer object for update
 				dt = TimeRecord.objects.get(id=timer_id,status='CT',owner=request.user.id)
 				timer_check = checkTimer(record)
 				if timer_check:
@@ -63,13 +76,13 @@ class TimeRecordView (APIView):
 				else:
 					dt.status = 'CL' #CANCEL
 					dt.save()
-					return Response({'Error':'Timer expired!'},status=status.HTTP_400_BAD_REQUEST)	
+					return Response({'Error':'Timer Canceled!'}, status=status.HTTP_200_OK)	
 			else:
-				return Response(status=status.HTTP_400_BAD_REQUEST)
+				return Response({'Error':'Timer ID required!'}, status=status.HTTP_400_BAD_REQUEST)
 		except TimeRecord.DoesNotExist:
 			return Response({'Error':'Record does not exist'}, status=status.HTTP_400_BAD_REQUEST)
 		except:
-			return Response({'Error':'Exception throwing'} ,status=status.HTTP_400_BAD_REQUEST)
+			return Response({'Error':'Exception throwing'} , status=status.HTTP_400_BAD_REQUEST)
 		
 
 class UserStatsView(APIView):
