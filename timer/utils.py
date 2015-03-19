@@ -3,7 +3,7 @@ from timer.models import TimeRecord,User
 import datetime
 import string
 
-def checkTimer(timer):
+def check_timer(timer):
 	serializer = TimeRecordSerializer(timer, many=True)
 	timer_record = serializer.data[0].items()
 	#OrderedDic Items Handling
@@ -18,7 +18,7 @@ def checkTimer(timer):
 	#Current time for crosscheck timer validation
 	crr_time = datetime.datetime.now()
 	on_date_utc_obj = __from_utc(on_date)
-	timer_test = __subtract_utc(crr_time,on_date_utc_obj,duration)
+	timer_test = __subtract_utc_boolean(crr_time,on_date_utc_obj,duration)
 	
 	return timer_test
 
@@ -45,7 +45,7 @@ def __from_utc(utcTime):
 	'''
 	return datetime.datetime.strptime(utcTime, "%Y-%m-%dT%H:%M:%S.%fZ")
 
-def __subtract_utc(date_1,date_2,dist):
+def __subtract_utc_boolean(date_1,date_2,dist):
 	'''
 	Calculates distance between the two dates and checks for expected distance.
 	'''
@@ -54,3 +54,30 @@ def __subtract_utc(date_1,date_2,dist):
 		return True
 	else:
 		return False
+
+def __subtract_utc(date_1,date_2,dist):
+	'''
+	Calculates distance between the two dates and returns total seconds
+	'''
+	result = (date_1 - date_2).total_seconds()
+	return result
+
+def remaining_time(time):
+	serializer = TimeRecordSerializer(time)
+	timer_record = serializer.data.items()
+
+	owner = timer_record[1][1]
+	on_date = timer_record[2][1]
+	timer_type = timer_record[3][1]
+	timer_status = timer_record[4][1]
+
+	duration = __type_seconds(timer_type)
+	crr_time = datetime.datetime.now()
+	on_date_utc_obj = __from_utc(on_date)
+	
+	remaining = __subtract_utc(crr_time,on_date_utc_obj,duration)
+	print duration
+	print remaining
+	result = duration - remaining
+
+	return result

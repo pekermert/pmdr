@@ -8,6 +8,7 @@ urlpatterns = [
 	url(r'^user/(?P<user_id>\w+|)/$', views.UserProfileView.as_view()),
 	url(r'^register/$', views.RegisterView.as_view()),
 	url(r'^timer/$', views.TimeRecordView.as_view()),
+	url(r'^timer/remaining/(?P<user_id>\w+)/$', views.TimerSyncView.as_view()),
 	url(r'^timer/(?P<user_id>\w+)/$', views.TimeRecordView.as_view()),
 	url(r'^timer/check/(?P<timer_id>\w+)/$', views.TimeRecordView.as_view()),
 	url(r'^statics/$', views.UserStatsView.as_view()),

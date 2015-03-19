@@ -6,7 +6,7 @@ from rest_framework import status
 
 from timer.models import TimeRecord,User
 from timer.serializers import TimeRecordSerializer,UserSerializer
-from timer.utils import checkTimer
+from timer.utils import check_timer,remaining_time
 
 	
 class UserProfileView (APIView):
@@ -68,7 +68,7 @@ class TimeRecordView (APIView):
 				record = TimeRecord.objects.filter(id=timer_id,status='CT')
 				#timer object for update
 				dt = TimeRecord.objects.get(id=timer_id,status='CT',owner=request.user.id)
-				timer_check = checkTimer(record)
+				timer_check = check_timer(record)
 				if timer_check:
 					dt.status = 'DN' #DONE
 					dt.save()
@@ -84,6 +84,23 @@ class TimeRecordView (APIView):
 		except:
 			return Response({'Error':'Exception throwing'} , status=status.HTTP_400_BAD_REQUEST)
 		
+class TimerSyncView(APIView):
+	authentication_classes = (JSONWebTokenAuthentication, )
+	permission_classes = ()	
+	#IsAuthenticated,
+
+	def get(self, request, user_id=None, *args, **kw):
+		'''
+		Returns the users current timer duration
+		'''
+		try:
+			if user_id is None:
+				user_id = request.user.id
+			record = TimeRecord.objects.filter(owner=user_id,status="CT").latest('id')
+			timer_duration = remaining_time(record)
+			return Response({'remaining':timer_duration}, status=status.HTTP_200_OK)
+		except TimeRecord.DoesNotExist:
+			return Response(status=status.HTTP_404_NOT_FOUND)
 
 class UserStatsView(APIView):
 	authentication_classes = (JSONWebTokenAuthentication, )
