@@ -55,7 +55,7 @@ def __subtract_utc_boolean(date_1,date_2,dist):
 	else:
 		return False
 
-def __subtract_utc(date_1,date_2,dist):
+def __subtract_utc(date_1,date_2):
 	'''
 	Calculates distance between the two dates and returns total seconds
 	'''
@@ -75,9 +75,14 @@ def remaining_time(time):
 	crr_time = datetime.datetime.now()
 	on_date_utc_obj = __from_utc(on_date)
 	
-	remaining = __subtract_utc(crr_time,on_date_utc_obj,duration)
+	remaining = __subtract_utc(crr_time,on_date_utc_obj)
 	print duration
 	print remaining
 	result = duration - remaining
 
 	return result
+
+### CHECK for USER CT TIMERS ###
+
+def ct_timer_check(user_id):
+	last_record = TimeRecord.objects.filter(owner=user_id,status='CT')
