@@ -11,10 +11,8 @@ def check_timer(timer):
 	on_date = timer_record[2][1]
 	timer_type = timer_record[3][1]
 	timer_status = timer_record[4][1]
-
 	#Timer Duration as second
 	duration = __type_seconds(timer_type)
-	
 	#Current time for crosscheck timer validation
 	crr_time = datetime.datetime.now()
 	on_date_utc_obj = __from_utc(on_date)
@@ -50,10 +48,7 @@ def __subtract_utc_boolean(date_1,date_2,dist):
 	Calculates distance between the two dates and checks for expected distance.
 	'''
 	result = (date_1 - date_2).total_seconds()
-	if result > dist:
-		return True
-	else:
-		return False
+	return (result > dist)
 
 def __subtract_utc(date_1,date_2,dist):
 	'''
