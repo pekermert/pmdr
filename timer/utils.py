@@ -76,8 +76,3 @@ def remaining_time(time):
 	result = duration - remaining
 
 	return result
-
-### CHECK for USER CT TIMERS ###
-
-def ct_timer_check(user_id):
-	last_record = TimeRecord.objects.filter(owner=user_id,status='CT')
