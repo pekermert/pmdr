@@ -8,7 +8,6 @@ from timer.models import TimeRecord,User
 from timer.serializers import TimeRecordSerializer,UserSerializer
 from timer.utils import check_timer,remaining_time
 
-	
 class UserProfileView (APIView):
 	authentication_classes = (JSONWebTokenAuthentication, )
 	permission_classes = ()
