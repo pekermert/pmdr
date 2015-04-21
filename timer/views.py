@@ -8,7 +8,7 @@ from timer.models import TimeRecord,User
 from timer.serializers import TimeRecordSerializer,UserSerializer
 from timer.utils import check_timer,remaining_time
 
-
+	
 class UserProfileView (APIView):
 	authentication_classes = (JSONWebTokenAuthentication, )
 	permission_classes = ()
@@ -49,6 +49,9 @@ class TimeRecordView (APIView):
 		Creates new timer
 		'''
 		try:
+			#Check for CT timers update as CL
+			pt = TimeRecord.objects.filter(status='CT',owner=request.user.id).update(status='CL')
+			#create timer object 
 			new_data = TimeRecordSerializer(data = request.data)
 			print request.data
 			if new_data.is_valid():
@@ -64,9 +67,9 @@ class TimeRecordView (APIView):
 		'''
 		try:
 			if timer_id:
-				#timer object for checking
+				#check
 				record = TimeRecord.objects.filter(id=timer_id,status='CT')
-				#timer object for update
+				#timer object update
 				dt = TimeRecord.objects.get(id=timer_id,status='CT',owner=request.user.id)
 				timer_check = check_timer(record)
 				if timer_check:
@@ -87,7 +90,6 @@ class TimeRecordView (APIView):
 class TimerSyncView(APIView):
 	authentication_classes = (JSONWebTokenAuthentication, )
 	permission_classes = ()	
-	#IsAuthenticated,
 
 	def get(self, request, user_id=None, *args, **kw):
 		'''
@@ -105,7 +107,7 @@ class TimerSyncView(APIView):
 class UserStatsView(APIView):
 	authentication_classes = (JSONWebTokenAuthentication, )
 	permission_classes = ()	
-	#IsAuthenticated,
+
 	def get(self, request, user_id=None, *args, **kw):
 		#timers = TimeRecord.objects.filter(owner=request.user.id)
 		status_arg = request.GET.get('status', None)
@@ -128,5 +130,3 @@ class RegisterView(APIView):
 			return Response(serializer.data, status=status.HTTP_201_CREATED)
 		else:
 			return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-		
