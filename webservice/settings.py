@@ -22,13 +22,11 @@ SECRET_KEY = '23qka530#k4fu453+)bof=)ipdg+e+yjdxeo1r@l9fiaf_day7'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
 TEMPLATE_DEBUG = True
-
 CORS_ORIGIN_ALLOW_ALL = True
 APPEND_SLASH=True
 
-ALLOWED_HOSTS = []
+#ALLOWED_HOSTS = []
 
 
 # Application definition
