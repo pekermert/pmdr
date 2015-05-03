@@ -16,9 +16,9 @@ def check_timer(timer):
 	#Current time for crosscheck timer validation
 	crr_time = datetime.datetime.now()
 	on_date_utc_obj = __from_utc(on_date)
-	timer_test = __subtract_utc_boolean(crr_time,on_date_utc_obj,duration)
+	result = __subtract_utc_boolean(crr_time,on_date_utc_obj,duration)
 	
-	return timer_test
+	return result
 
 def __type_seconds(timer_type):
 	'''
@@ -71,13 +71,6 @@ def remaining_time(time):
 	on_date_utc_obj = __from_utc(on_date)
 	
 	remaining = __subtract_utc(crr_time,on_date_utc_obj)
-	print duration
-	print remaining
 	result = duration - remaining
 
 	return result
-
-### CHECK for USER CT TIMERS ###
-
-def ct_timer_check(user_id):
-	last_record = TimeRecord.objects.filter(owner=user_id,status='CT')
