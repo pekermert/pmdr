@@ -69,7 +69,7 @@ class TimeRecordView (APIView):
 			if timer_id:
 				#check
 				record = TimeRecord.objects.filter(id=timer_id,status='CT')
-				#timer object update
+				#update
 				dt = TimeRecord.objects.get(id=timer_id,status='CT',owner=request.user.id)
 				timer_check = check_timer(record)
 				if timer_check:
@@ -109,7 +109,6 @@ class UserStatsView(APIView):
 	permission_classes = ()	
 
 	def get(self, request, user_id=None, *args, **kw):
-		#timers = TimeRecord.objects.filter(owner=request.user.id)
 		status_arg = request.GET.get('status', None)
 		if status_arg:
 			timers = TimeRecord.objects.filter(owner=user_id,status=status_arg)
