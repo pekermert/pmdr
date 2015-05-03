@@ -54,7 +54,8 @@ def __subtract_utc(date_1,date_2):
 	'''
 	Calculates distance between the two dates and returns total seconds
 	'''
-	return (date_1 - date_2).total_seconds()
+	result = (date_1 - date_2).total_seconds()
+	return result
 
 def remaining_time(time):
 	serializer = TimeRecordSerializer(time)
